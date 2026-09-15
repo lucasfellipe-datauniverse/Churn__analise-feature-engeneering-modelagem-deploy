@@ -1,10 +1,9 @@
-
 WITH tb_transacoes AS (
 
   SELECT t1.*,
-          t2.idTransacaoProduto,
-          t2.idProduto,
-          t3.descNomeProduto
+         t2.idTransacaoProduto,
+         t2.idProduto,
+         t3.descNomeProduto
 
   FROM churn_tables.silver.transacoes AS t1
 
@@ -27,35 +26,35 @@ tb_cliente_agrupado AS (
 
   count(distinct idTransacao) AS qtdTransacoes,
 
-  count(distinct idTransacao) / count(distinct date(dtCriacao)) AS qtdTransacoesDia,
+  count(distinct idTransacao) / nullif(count(distinct date(dtCriacao)), 0) AS qtdTransacoesDia,
 
-  sum(CASE WHEN dayofweek(dtCriacao) = 1 then 1 else 0 end) / count(distinct idTransacao) AS pctDia01,
-  sum(CASE WHEN dayofweek(dtCriacao) = 2 then 1 else 0 end) / count(distinct idTransacao) AS pctDia02,
-  sum(CASE WHEN dayofweek(dtCriacao) = 3 then 1 else 0 end) / count(distinct idTransacao) AS pctDia03,
-  sum(CASE WHEN dayofweek(dtCriacao) = 4 then 1 else 0 end) / count(distinct idTransacao) AS pctDia04,
-  sum(CASE WHEN dayofweek(dtCriacao) = 5 then 1 else 0 end) / count(distinct idTransacao) AS pctDia05,
-  sum(CASE WHEN dayofweek(dtCriacao) = 6 then 1 else 0 end) / count(distinct idTransacao) AS pctDia06,
-  sum(CASE WHEN dayofweek(dtCriacao) = 7 then 1 else 0 end) / count(distinct idTransacao) AS pctDia07,
+  sum(CASE WHEN dayofweek(dtCriacao) = 1 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia01,
+  sum(CASE WHEN dayofweek(dtCriacao) = 2 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia02,
+  sum(CASE WHEN dayofweek(dtCriacao) = 3 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia03,
+  sum(CASE WHEN dayofweek(dtCriacao) = 4 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia04,
+  sum(CASE WHEN dayofweek(dtCriacao) = 5 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia05,
+  sum(CASE WHEN dayofweek(dtCriacao) = 6 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia06,
+  sum(CASE WHEN dayofweek(dtCriacao) = 7 then 1 else 0 end) / nullif(count(distinct idTransacao), 0) AS pctDia07,
 
-  SUM(CASE WHEN hour(dtCriacao) BETWEEN 6 AND 11 THEN 1 ELSE 0 END) / COUNT(DISTINCT idTransacao) AS pctManha,
-  SUM(CASE WHEN hour(dtCriacao) BETWEEN 12 AND 17 THEN 1 ELSE 0 END) / COUNT(DISTINCT idTransacao) AS pctTarde,
-  SUM(CASE WHEN hour(dtCriacao) BETWEEN 18 AND 23 THEN 1 ELSE 0 END) / COUNT(DISTINCT idTransacao) AS pctNoite,
-  SUM(CASE WHEN hour(dtCriacao) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) / COUNT(DISTINCT idTransacao) AS pctMadrugada,
+  SUM(CASE WHEN hour(dtCriacao) BETWEEN 6 AND 11 THEN 1 ELSE 0 END) / nullif(COUNT(DISTINCT idTransacao), 0) AS pctManha,
+  SUM(CASE WHEN hour(dtCriacao) BETWEEN 12 AND 17 THEN 1 ELSE 0 END) / nullif(COUNT(DISTINCT idTransacao), 0) AS pctTarde,
+  SUM(CASE WHEN hour(dtCriacao) BETWEEN 18 AND 23 THEN 1 ELSE 0 END) / nullif(COUNT(DISTINCT idTransacao), 0) AS pctNoite,
+  SUM(CASE WHEN hour(dtCriacao) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) / nullif(COUNT(DISTINCT idTransacao), 0) AS pctMadrugada,
 
-  COUNT(DISTINCT CASE WHEN descNomeProduto = 'ChatMessage' THEN idTransacaoProduto END) / count(distinct idTransacaoProduto) AS pctChatMessage,
-  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Lista de presença' THEN idTransacaoProduto END) / count(distinct idTransacaoProduto) AS pctListaPresenca,
-  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Resgatar Ponei' THEN idTransacaoProduto END) / count(distinct idTransacaoProduto) AS pctResgatarPonei,
-  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Presença Streak' THEN idTransacaoProduto END) / count(distinct idTransacaoProduto) AS pctPresencaStreak,
-  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Troca de Pontos StreamElements' THEN idTransacaoProduto END) / count(distinct idTransacaoProduto) AS pctTrocaPontosStreamElements,
+  COUNT(DISTINCT CASE WHEN descNomeProduto = 'ChatMessage' THEN idTransacaoProduto END) / nullif(count(distinct idTransacaoProduto), 0) AS pctChatMessage,
+  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Lista de presença' THEN idTransacaoProduto END) / nullif(count(distinct idTransacaoProduto), 0) AS pctListaPresenca,
+  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Resgatar Ponei' THEN idTransacaoProduto END) / nullif(count(distinct idTransacaoProduto), 0) AS pctResgatarPonei,
+  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Presença Streak' THEN idTransacaoProduto END) / nullif(count(distinct idTransacaoProduto), 0) AS pctPresencaStreak,
+  COUNT(DISTINCT CASE WHEN descNomeProduto = 'Troca de Pontos StreamElements' THEN idTransacaoProduto END) / nullif(count(distinct idTransacaoProduto), 0) AS pctTrocaPontosStreamElements,
 
-  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN idTransacao ELSE 0 END) /
-    count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN date(dtCriacao) END),0) AS qtdTransacaoDiaD7,
-  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN idTransacao ELSE 0 END) /
-    count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN date(dtCriacao) END),0) AS qtdTransacaoDiaD14,
-  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN idTransacao ELSE 0 END) /
-    count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN date(dtCriacao) END),0) AS qtdTransacaoDiaD28,
-  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN idTransacao ELSE 0 END) /
-    count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN date(dtCriacao) END),0) AS qtdTransacaoDiaD56,
+  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN idTransacao END) /
+    nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdTransacaoDiaD7,
+  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN idTransacao END) /
+    nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdTransacaoDiaD14,
+  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN idTransacao END) /
+    nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdTransacaoDiaD28,
+  COALESCE(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN idTransacao END) /
+    nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdTransacaoDiaD56,
 
     sum(vlPontosTransacao) AS qtPontos,
     sum(abs(vlPontosTransacao)) AS qtPontosAbs,
@@ -75,19 +74,19 @@ tb_cliente_agrupado AS (
     sum(CASE WHEN vlPontosTransacao > 0 AND dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN vlPontosTransacao ELSE 0 END ) AS vlPontosPosD56,
     sum(CASE WHEN vlPontosTransacao < 0 AND dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN vlPontosTransacao ELSE 0 END ) AS vlPontosNegD56,
 
-    sum(abs(vlPontosTransacao)) / count(distinct date(dtCriacao)) AS qtdPontosDia,
+    sum(abs(vlPontosTransacao)) / nullif(count(distinct date(dtCriacao)), 0) AS qtdPontosDia,
 
     COALESCE(sum(CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN abs(vlPontosTransacao) ELSE 0 END) /
-      count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN date(dtCriacao) END),0) AS qtdPontosDiaD7,
+      nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 7 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdPontosDiaD7,
 
     COALESCE(sum(CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN abs(vlPontosTransacao) ELSE 0 END) /
-      count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN date(dtCriacao) END),0) AS qtdPontosDiaD14,
+      nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 14 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdPontosDiaD14,
 
     COALESCE(sum(CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN abs(vlPontosTransacao) ELSE 0 END) /
-      count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN date(dtCriacao) END),0) AS qtdPontosDiaD28,
+      nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 28 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdPontosDiaD28,
 
     COALESCE(sum(CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN abs(vlPontosTransacao) ELSE 0 END) /
-      count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN date(dtCriacao) END),0) AS qtdPontosDiaD56
+      nullif(count(DISTINCT CASE WHEN dtCriacao >= date('{date}') - INTERVAL 56 DAYS THEN date(dtCriacao) END), 0), 0) AS qtdPontosDiaD56
 
   FROM tb_transacoes
   GROUP BY ALL
@@ -106,18 +105,18 @@ tb_daily AS (
 tb_horas_assistdas AS (
 
     SELECT idCliente,
-          
-          sum(qtMinutosAssistidos) AS qtMinutosAssistidos,
-          sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 7 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidoD7,
-          sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 14 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidosD14,
-          sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 28 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidosD28,
-          sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 56 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidosD56,
-          
-          avg(qtMinutosAssistidos) AS avgMinutosAssistidos,
-          avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 7 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidoD7,
-          avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 14 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidosD14,
-          avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 28 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidosD28,
-          avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 56 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidosD56
+         
+         sum(qtMinutosAssistidos) AS qtMinutosAssistidos,
+         sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 7 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidoD7,
+         sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 14 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidosD14,
+         sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 28 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidosD28,
+         sum(CASE WHEN dtDia >= date('{date}') - INTERVAL 56 DAYS THEN qtMinutosAssistidos ELSE 0 END) AS qtMinutosAssistidosD56,
+         
+         avg(qtMinutosAssistidos) AS avgMinutosAssistidos,
+         avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 7 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidoD7,
+         avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 14 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidosD14,
+         avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 28 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidosD28,
+         avg(CASE WHEN dtDia >= date('{date}') - INTERVAL 56 DAYS THEN qtMinutosAssistidos END) AS avgMinutosAssistidosD56
 
     FROM tb_daily
     GROUP BY ALL
@@ -131,7 +130,7 @@ tb_user AS (
 
 tb_calendar AS (
 
-  SELECT DISTINCT date(dtCriacao)
+  SELECT DISTINCT date(dtCriacao) AS dtCriacao
   FROM tb_transacoes
 
 ),
@@ -143,7 +142,7 @@ tb_cross AS (
 tb_dia_transacao_completa_d7 AS (
 
     SELECT t1.*,
-          coalesce(t2.qtdeTransacaoDia,0) AS qtdeTransacao
+         coalesce(t2.qtdeTransacaoDia,0) AS qtdeTransacao
     FROM tb_cross AS t1
 
     LEFT JOIN tb_daily AS t2
@@ -157,7 +156,7 @@ tb_dia_transacao_completa_d7 AS (
 tb_lag_d7 AS (
 
 SELECT *,
-       lag(qtdeTransacao) OVER (PARTITION BY idCliente ORDER BY dtCriacao) AS lagQtdeTransacao
+        lag(qtdeTransacao) OVER (PARTITION BY idCliente ORDER BY dtCriacao) AS lagQtdeTransacao
 
 FROM tb_dia_transacao_completa_d7
 
@@ -166,20 +165,20 @@ FROM tb_dia_transacao_completa_d7
 tb_ifr AS (
 
   SELECT idCliente,
-          count(distinct dtCriacao) AS qtdeDias,
-          sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) as ganhos,
-          sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end) as perdas,
+         count(distinct dtCriacao) AS qtdeDias,
+         sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) as ganhos,
+         sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end) as perdas,
 
-          100 - 100 / (1 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end)) As ifr_bruto,
+         100 - 100 / (1 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / nullif(sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end), 0)) As ifr_bruto,
 
-          100 - 100 / (2 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / (1+sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end))) As ifr_plus1,
+         100 - 100 / (2 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / nullif((1 + sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end)), 0)) As ifr_plus1,
 
-          case when sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end) = 0
-                  then 100 - 100 / (2 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / (1+sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end)))
-              else 100 - 100 / (1 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end))
+         case when sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end) = 0
+               then 100 - 100 / (2 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / nullif((1 + sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end)), 0))
+              else 100 - 100 / (1 + sum(case when qtdeTransacao - lagQtdeTransacao > 0 then qtdeTransacao - lagQtdeTransacao end) / nullif(sum(case when qtdeTransacao - lagQtdeTransacao < 0 then abs(qtdeTransacao - lagQtdeTransacao) end), 0))
               end as ifr_plus1_case,
 
-          sum(qtdeTransacao - lagQtdeTransacao) AS ganho_liquido
+         sum(qtdeTransacao - lagQtdeTransacao) AS ganho_liquido
 
   FROM tb_lag_d7
   WHERE lagQtdeTransacao IS NOT NULL
@@ -200,11 +199,11 @@ tb_lag_day AS (
 tb_interval AS (
 
 SELECT idCliente,
-       avg(date_diff(dtDia, lagDtDia)) AS avgIntervalDays,
-       median(date_diff(dtDia, lagDtDia)) AS medianIntervalDays,
-       max(date_diff(dtDia, lagDtDia)) AS maxIntervalDays,
-       coalesce(std(date_diff(dtDia, lagDtDia)),0) AS stdIntervalDays,
-       sum(case when date_diff(dtDia, lagDtDia) > 28 then 1 else 0 end) AS qtdInterval28days
+       avg(datediff(dtDia, lagDtDia)) AS avgIntervalDays,
+       median(datediff(dtDia, lagDtDia)) AS medianIntervalDays,
+       max(datediff(dtDia, lagDtDia)) AS maxIntervalDays,
+       coalesce(std(datediff(dtDia, lagDtDia)),0) AS stdIntervalDays,
+       sum(case when datediff(dtDia, lagDtDia) > 28 then 1 else 0 end) AS qtdInterval28days
 
 FROM tb_lag_day
 WHERE lagDtDia IS NOT NULL
