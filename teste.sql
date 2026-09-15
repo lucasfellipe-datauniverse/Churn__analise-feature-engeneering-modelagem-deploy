@@ -1,1 +1,0 @@
-select * from churn_tables.silver.clientes limit 10
